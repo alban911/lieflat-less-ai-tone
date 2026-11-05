@@ -1,0 +1,23 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    # 每天 UTC 00:00 (北京时间 08:00) 自动与源库同步一次
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync Fork with Upstream
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge upstream/main into main via GitHub API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/merge-upstream \
+            -X POST \
+            -f branch=main
